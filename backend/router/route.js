@@ -161,7 +161,7 @@ const db = mysql.createPool({
     });
   });
 
-  BackendRouter.post("/showcountry", async (req, res) => {
+  BackendRouter.get("/showcountry", async (req, res) => {
     db.getConnection(async (err, connection) => {
       if (err) throw err;
       const sqlSearch = "SELECT * FROM country";

@@ -1,5 +1,6 @@
 // import logo from './logo.svg';
 import './App.css';
+import React from "react";
 import {Routes,Route} from 'react-router-dom'
 import Vendor from './components/CreateVendor'
 import EditVendor from './components/EditVendor';
@@ -10,12 +11,11 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        {/* <Route path='/' element={<Vendor/>} /> */}
+        <Route path='/' element={<Vendor/>} />
         <Route path='/editvendor' element={<EditVendor/>} />
         <Route path='/deletevendor' element={<DeleteVenor/>} />
-        {/* <Route path='/vendortable' components={<VendorTable/>} /> */}
+        <Route path='/table' element={<VendorTable/>} />
       </Routes>
-      <VendorTable/>  
     </div>
   );
 }
