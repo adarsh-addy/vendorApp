@@ -2,38 +2,22 @@ import React, { useEffect, useState } from "react";
 import "../styles/createvendor.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 export default function CreateVendor() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const navigate = useNavigate();
   let [cityProduct, SetCityProduct] = useState("");
   let [countryProduct, SetCountryProduct] = useState("");
-  let [vendorname, SetVendorname] = useState("");
-  let [bank_acc_no, SetBank_acc_no] = useState("");
-  let [bank_name, SetBank_name] = useState("");
-  let [address, SetAddress] = useState("");
-  let [city, SetCity] = useState("");
-  let [country, SetCountry] = useState("");
-  let [zip_code, SetZip_code] = useState("");
-  console.log(vendorname);
-  console.log(bank_acc_no);
-  console.log(bank_name);
-  console.log(address);
-  console.log(city);
-  console.log(country);
-  console.log(zip_code);
-
-  async function handleSave(e) {
-    e.preventDefault();
+  async function handleSave(data) {
+    let payload = { ...data, address: data.address1 + " " + data.address2 };
+    console.log(payload);
     const resp = await axios
-      .post("http://localhost:4000/backend/save", {
-        vendorname,
-        bank_acc_no,
-        bank_name,
-        address,
-        city,
-        country,
-        zip_code,
-      })
+      .post("http://localhost:4000/backend/save", payload)
       .catch((err) => {
         alert(err.response.data.message);
       });
@@ -42,13 +26,6 @@ export default function CreateVendor() {
       alert("Record inserted successfully");
       navigate("/table");
     }
-    SetVendorname("");
-    SetBank_acc_no("");
-    SetBank_name("");
-    SetAddress("");
-    SetCity("");
-    SetCountry("");
-    SetZip_code("");
   }
 
   async function handleCity() {
@@ -70,7 +47,7 @@ export default function CreateVendor() {
   }, []);
   return (
     <div className="container">
-      <form className="registration">
+      <form className="registration" onSubmit={handleSubmit(handleSave)}>
         <h1>Vendor Form</h1>
 
         <label>
@@ -79,16 +56,9 @@ export default function CreateVendor() {
           <input
             type="text"
             id="vendorname"
-            onChange={(e) => SetVendorname(e.target.value)}
-            required
+            {...register("vendorname", { required: true })}
           />
-
-          <ul className="input-requirements">
-            <li>At least 3 characters long</li>
-            <li>
-              Must only contain letters and numbers (no special characters)
-            </li>
-          </ul>
+          {errors.vendorname && <p>Please check the Vendor Name</p>}
         </label>
 
         <label>
@@ -97,17 +67,9 @@ export default function CreateVendor() {
           <input
             type="number"
             id="number"
-            onChange={(e) => SetBank_acc_no(e.target.value)}
-            required
+            {...register("bank_acc_no", { required: true })}
           />
-
-          <ul className="input-requirements">
-            <li>At least 8 characters long (and less than 100 characters)</li>
-            <li>Contains at least 1 number</li>
-            <li>Contains at least 1 lowercase letter</li>
-            <li>Contains at least 1 uppercase letter</li>
-            <li>Contains a special character (e.g. @ !)</li>
-          </ul>
+          {errors.bank_acc_no && <p>Please check the Bank Acc. No.</p>}
         </label>
 
         <label>
@@ -116,29 +78,31 @@ export default function CreateVendor() {
           <input
             type="text"
             id="bankname"
-            onChange={(e) => SetBank_name(e.target.value)}
-            required
+            {...register("bank_name", { required: true })}
           />
+          {errors.bank_name && <p>Please check the Bank Name.</p>}
         </label>
 
         <label>
           <span>Address 1</span>
           <textarea
             id="address1"
-            onChange={(e) => SetAddress(e.target.value)}
+            {...register("address1", { required: true })}
           ></textarea>
+          {errors.address1 && <p>Please check the Address1.</p>}
         </label>
         <label>
           <span>Address 2</span>
           <textarea
             id="address2"
-            onChange={(e) => SetAddress(e.target.value)}
+            {...register("address2", { required: true })}
           ></textarea>
+          {errors.address2 && <p>Please check the Address2.</p>}
         </label>
         <label>
           <span>City</span>
 
-          <select id="city" onChange={(e) => SetCity(e.target.value)}>
+          <select id="city" {...register("city", { required: true })}>
             {cityProduct.length !== 0 ? (
               cityProduct.map((ele, idx) => {
                 return <option key={idx}>{ele.city}</option>;
@@ -147,12 +111,13 @@ export default function CreateVendor() {
               <option>No data</option>
             )}
           </select>
+          {errors.city && <p>Please check the City.</p>}
         </label>
 
         <label>
           <span>Country</span>
 
-          <select id="country" onChange={(e) => SetCountry(e.target.value)}>
+          <select id="country" {...register("country", { required: true })}>
             {countryProduct.length !== 0 ? (
               countryProduct.map((ele, idx) => {
                 return <option key={idx}>{ele.country}</option>;
@@ -161,6 +126,7 @@ export default function CreateVendor() {
               <option>No data</option>
             )}
           </select>
+          {errors.country && <p>Please check the Country.</p>}
         </label>
 
         <label>
@@ -169,14 +135,14 @@ export default function CreateVendor() {
           <input
             type="number"
             id="zipcode"
-            onChange={(e) => SetZip_code(e.target.value)}
-            required
+            {...register("zip_code", { required: true })}
           />
+          {errors.zip_code && <p>Please check the Zip Code.</p>}
         </label>
 
         <br />
 
-        <input type="submit" onClick={handleSave} />
+        <input type="submit" />
       </form>
     </div>
   );

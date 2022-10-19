@@ -84,7 +84,7 @@ const db = mysql.createPool({
     const country = req.body.country;
     const zip_code = req.body.zip_code;
 
-    if(!vendorname && !bank_acc_no && !bank_name && !address && !city && !country && !zip_code){
+    if(!id && !vendorname && !bank_acc_no && !bank_name && !address && !city && !country && !zip_code){
       return res.status(400).send({
          message:"Invalid all details"
        })
@@ -92,7 +92,7 @@ const db = mysql.createPool({
     
     db.getConnection(async (err, connection) => {
       if (err) throw err;
-      const sqlInsert = `UPDATE new_vendor SET vendorname=${vendorname}, bank_acc_no='${bank_acc_no}', bank_name='${bank_name}', address=${address} ,city='${city}', country='${country}', zip_code='${zip_code}' WHERE id=${id}`;
+      const sqlInsert = `UPDATE new_vendor SET vendorname='${vendorname}', bank_acc_no=${bank_acc_no}, bank_name='${bank_name}', address='${address}' ,city='${city}', country='${country}', zip_code=${zip_code} WHERE id=${id}`;
       await connection.query(sqlInsert, (err, result) => {
         if (err) throw err;
         console.log("Record updated");
@@ -144,6 +144,30 @@ const db = mysql.createPool({
       });
     });
   });
+
+  BackendRouter.delete("/delete",async(req,res)=>{
+    let id=req.body.id
+   console.log(req.body);
+    db.getConnection(async(err,connection)=>{
+        if(err){
+            console.log(err);
+        }else{
+            const insert_qu=`DELETE FROM new_vendor WHERE id ='${id}'`
+           await connection.query(insert_qu,(err,result)=>{
+                if(err) throw err
+                console.log("result",result);
+                res.json({
+                    message:"Delete Query Executed"
+
+                })
+                connection.release()
+            })
+           
+        }
+
+    })
+})
+
 
   BackendRouter.get("/showcity", async (req, res) => {
     db.getConnection(async (err, connection) => {

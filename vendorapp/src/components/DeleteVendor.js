@@ -1,84 +1,122 @@
-import React from "react";
-import '../styles/createvendor.css';
+import React, { useEffect, useState } from "react";
+import "../styles/createvendor.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function CreateVendor() {
+  const navigate = useNavigate();
+  let [vendorname, setVendorname] = useState("");
+  let [bank_acc_no, setBank_acc_no] = useState("");
+  let [bank_name, setBank_name] = useState("");
+  let [address, setAddress] = useState("");
+  let [city, setCity] = useState("");
+  let [country, setCountry] = useState("");
+  let [zip_code, setZip_code] = useState("");
+  const location = useLocation();
+  useEffect(() => {
+    async function res() {
+      await handleDeleteId();
+    }
+    res();
+  }, []);
+
+  async function handleDeleteId() {
+    let idResult = await axios
+      .post("http://localhost:4000/backend/idresult", {
+        id: location.state.id,
+      })
+      .catch((err) => {
+        alert(err.response.data.message);
+      });
+      const vendor_data = idResult.data.records[0];
+    if (vendor_data) {
+      // console.log(idResult.data.records[0]);
+      // alert("Record inserted successfully");
+      //   alert("Record has been filled");
+     
+      setVendorname(vendor_data.vendorname); //--->mobile_num is database column name & also we again overwrite The used for incoming use
+      setBank_acc_no(vendor_data.bank_acc_no);
+      setBank_name(vendor_data.bank_name);
+      setAddress(vendor_data.address);
+      setCity(vendor_data.city);
+      setCountry(vendor_data.country);
+      setZip_code(vendor_data.zip_code);
+    }
+  }
+
+  async function handleDelete(e) {
+    e.preventDefault();
+    let result = await axios
+      .delete("http://localhost:4000/backend/delete", {
+       data:{id:location.state.id}
+      })
+      .catch((err) => {
+        //here we applying an error condition to using a update so we using catch for This to handle an error issue
+        // console.log(err.response.data);
+        alert(err.response);
+      });
+    if (result) {
+      console.log(result);
+      alert("Record Deleted successfully");
+      setVendorname("");
+      setBank_acc_no("");
+      setBank_name("");
+      setAddress("");
+      setCity("");
+      setCountry("");
+      setZip_code("");
+      navigate("/table");
+    }
+  }
+
   return (
     <div className="container">
-      <form className="registration">
+      <form className="registration" onSubmit={handleDelete}>
         <h1>Delete Vendor Details</h1>
 
         <label>
           <span>Vendor name</span>
 
-          <input type="text" id="vendorname"  required />
-
-          <ul className="input-requirements">
-            <li>At least 3 characters long</li>
-            <li>
-              Must only contain letters and numbers (no special characters)
-            </li>
-          </ul>
+          <input type="text" id="vendorname" value={vendorname} />
         </label>
 
         <label>
           <span>Bank Account No.</span>
 
-          <input
-            type="number"
-            id="number"
-            required
-          />
-
-          <ul className="input-requirements">
-            <li>At least 8 characters long (and less than 100 characters)</li>
-            <li>Contains at least 1 number</li>
-            <li>Contains at least 1 lowercase letter</li>
-            <li>Contains at least 1 uppercase letter</li>
-            <li>Contains a special character (e.g. @ !)</li>
-          </ul>
+          <input type="number" id="number" value={bank_acc_no} />
         </label>
 
         <label>
           <span>Bank name</span>
 
-          <input type="text" id="bankname"  required />
-          </label>
+          <input type="text" id="bankname" value={bank_name} />
+        </label>
 
         <label>
           <span>Address 1</span>
-          <textarea  id="address1"></textarea>
+          <textarea id="address1" value={address}></textarea>
         </label>
         <label>
           <span>Address 2</span>
-          <textarea  id="address2"></textarea>
+          <textarea id="address2" value={address}></textarea>
         </label>
         <label>
           <span>City</span>
 
-          <select id="cars">
-  <option value="volvo">Noida</option>
-  <option value="saab">Saab</option>
-  <option value="opel">Opel</option>
-  <option value="audi">Audi</option>
-</select>
-          </label>
+          <input type="text" id="city" value={city} />
+        </label>
 
-          <label>
+        <label>
           <span>Country</span>
 
-          <select id="cars">
-  <option value="volvo">USA</option>
-  <option value="saab">Saab</option>
-  <option value="opel">Opel</option>
-  <option value="audi">Audi</option>
-</select>
-          </label>
+          <input type="text" id="country" value={country} />
+        </label>
 
-          <label>
+        <label>
           <span>Zip-code</span>
 
-          <input type="number" id="zipcode"  required />
-          </label>
+          <input type="number" id="zipcode" value={zip_code} />
+        </label>
 
         <br />
 
